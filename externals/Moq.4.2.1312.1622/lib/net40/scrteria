@@ -1,0 +1,9 @@
+namespace Test.Infrastructure
+{
+    public interface ISortCriteria<T>
+    {
+        SortDirection Direction { get; set; }
+
+        IOrderedQueryable<T> ApplyOrdering(IQueryable<T> query, Boolean useThenBy);
+    }
+}
