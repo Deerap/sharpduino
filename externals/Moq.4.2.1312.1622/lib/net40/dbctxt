@@ -1,0 +1,9 @@
+namespace Test.Framework
+{
+    public interface ITenantDbContext: IDisposable
+    {
+        bool IsAuditEnabled { get; set; }
+        IDbSet<T> GetEntitySet<T>() where T : class;
+        int SaveChanges();
+    }
+}
