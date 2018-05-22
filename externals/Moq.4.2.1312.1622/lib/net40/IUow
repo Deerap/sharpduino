@@ -1,0 +1,9 @@
+namespace Deerap.Educasts.Tenant.Domain.Framework
+{
+    public interface IUnitOfWork : IDisposable
+    {
+        IRepository<T> Repository<T>() where T : class;
+        
+        void Commit();
+    }
+}
