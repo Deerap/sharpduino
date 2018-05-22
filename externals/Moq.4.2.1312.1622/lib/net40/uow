@@ -1,0 +1,70 @@
+namespace Test.Infrastructure
+{
+    public class UnitOfWork : IUnitOfWork
+    {
+        #region :Private Members:
+        private ITenantDbContext _context;
+        private Dictionary<string, dynamic> _repositories;
+        #endregion
+
+        #region :Constructors:
+        public UnitOfWork(ITenantDbContext context)
+        {
+            _context = context;
+            _repositories = new Dictionary<string, dynamic>();
+        }
+        #endregion
+
+        #region :Destructor:
+        ~UnitOfWork()
+        {
+            Dispose(false);
+        }
+        #endregion
+
+        #region :IUnitOfWork:
+        public IRepository<T> Repository<T>()
+           where T : class
+        {
+            string type = typeof(T).Name;
+
+            if (!_repositories.ContainsKey(type))
+            {
+                Type repositoryType = typeof(Repository<>);
+                _repositories.Add(type, Activator.CreateInstance(repositoryType.MakeGenericType(typeof(T)), _context));
+            }
+
+            return (IRepository<T>)_repositories[type];
+        }
+        
+        public void Commit()
+        {
+            _context.SaveChanges();
+        }
+        #endregion
+
+        #region :IDisposable:
+        private bool _disposed;
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        public virtual void Dispose(bool disposing)
+        {
+            if (_disposed) return;
+
+            if (disposing)
+            {
+                if (_context != null)
+                {
+                    _context.Dispose();
+                    _context = null;
+                }
+                _disposed = true;
+            }
+        }
+        #endregion
+    }
+}
